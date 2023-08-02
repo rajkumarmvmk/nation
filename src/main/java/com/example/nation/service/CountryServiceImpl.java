@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +39,7 @@ public class CountryServiceImpl implements CountryService {
     @Override
     public CountryResponseDto register(CountryRequestDto countryRequestDto) throws BusinessException, TechnicalException {
         Optional<CountryEntity> countryEntityCheck =countryDao.isCodeExists(countryRequestDto.getCountryCode());
-        if(countryEntityCheck.isEmpty() || !countryEntityCheck.get().getCountryCode().equals(countryRequestDto.getCountryCode())){
+        if(countryEntityCheck.isEmpty()){
             CountryEntity countryEntity  =countryRequestDto.serialize();
             List<StateGetAndUpResponseDto> stateGetAndUpResponseDtos = new ArrayList<>();
            try{
@@ -75,7 +76,7 @@ public class CountryServiceImpl implements CountryService {
             List<CountryEntity> countryEntity = countryDao.getAll();
             log.info("-----------------{}------------------------",countryEntity.size());
             List<CountryAllRecord> countryAllRecords = new ArrayList<>();
-            countryEntity.stream().forEach(obj -> {
+            countryEntity.forEach(obj -> {
                 CountryAllRecord countryAllRecord = CountryAllRecord.deserialize(obj);
                 List<StateResponseGetDto> stateResponseGetDtos = new ArrayList<>();
                 obj.getStateEntity().stream().forEach(state -> {
@@ -91,7 +92,7 @@ public class CountryServiceImpl implements CountryService {
         @Override
         public CountryGetAndUpResponseDto update(String countryCode, CountryUpdateRequestDto countryUpdateRequestDto) throws BusinessException, TechnicalException {
         Optional<CountryEntity> countryEntity=countryDao.isCodeExists(countryCode);
-        if(countryEntity.isPresent()){
+            if(countryEntity.isPresent()){
                         countryEntity.get().setCountryName(countryUpdateRequestDto.getCountryName());
                         countryEntity.get().setCapital(countryUpdateRequestDto.getCapital());
                         countryEntity.get().setContinent(countryUpdateRequestDto.getContinent());

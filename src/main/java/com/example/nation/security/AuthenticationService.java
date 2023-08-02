@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -39,7 +40,7 @@ public class AuthenticationService {
 
 
 
-  public AuthenticationResponse register(RegisterRequest request) throws BusinessException {
+  public AuthenticationResponse register(RegisterRequest request) throws BusinessException  {
    Optional<User> userRecord =repository.getByEmail(request.getEmail());
     if(userRecord.isEmpty() || !request.getEmail().equals(userRecord.get().getEmail())){
       log.info(String.valueOf(repository.findByEmail(request.getEmail())));

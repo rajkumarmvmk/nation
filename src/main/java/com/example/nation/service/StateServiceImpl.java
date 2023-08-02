@@ -21,10 +21,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+
 @Slf4j
 @RequiredArgsConstructor
 @Component
@@ -34,10 +38,11 @@ public class StateServiceImpl implements StateService {
     private final CountryDao countryDao;
     private final StateRepository stateRepository;
 
+
     @Override
     public StateResponseDto register(String countryCode, StateRequestDto stateRequestDto) throws BusinessException {
         Optional<StateEntity> stateEntity = stateDao.isStateCodeExists(stateRequestDto.getStateCode());
-        if (stateEntity.isEmpty() || !stateEntity.get().getStateCode().equals(stateRequestDto.getStateCode())) {
+        if (stateEntity.isEmpty()) {
             StateEntity stateEntityFinal = stateRequestDto.serialize();
             Optional<CountryEntity> countryEntity = countryDao.isCodeExists(countryCode);
             if (countryEntity.isPresent()) {
@@ -99,6 +104,7 @@ public class StateServiceImpl implements StateService {
         log.info("-----------------{}------------------------",id);
         districtDao.deleteByStateId(stateDao.getAllStateIdByCountryId(id));
         return stateDao.deleteByCountryId(id);
+
     }
 
     @Override
@@ -110,11 +116,13 @@ public class StateServiceImpl implements StateService {
         String id =  stateEntity.get().getId();
         districtDao.deleteByStateId(Collections.singletonList(id));
         stateRepository.deleteAllByStateCode(stateCode);
+
         return "success";
     }
        else{
            throw new BusinessException(BaseErrorCodes.RECORD_NOT_FOUND.name(),BaseErrorCodes.RECORD_NOT_FOUND.message());
            }
        }
+
 
 }
